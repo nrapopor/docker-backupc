@@ -35,7 +35,7 @@ RUN sudo apt-get update && apt-get -y upgrade && \
     # Disable ssh host key checking per default
     echo "host *"                       >> $TMP_DATA/.ssh/config && \
     echo "    StrictHostKeyChecking no" >> $TMP_DATA/.ssh/config && \
-    htpasswd -b $TMP_CONFIG/htpasswd backuppc backuppc && \
+    htpasswd -b $TMP_CONFIG/htpasswd backuppc password && \
 
     # Disable basic auth for package generated config
     sed -i 's/Auth.*//g' $TMP_CONFIG/apache.conf && \

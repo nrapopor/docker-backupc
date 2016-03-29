@@ -17,7 +17,6 @@ A simple docker container for running Backuppc.
 * SSH host key checking **disabled**
 * If the data volume is empty, a new SSH key pair gets generated at startup
 
-
 ### Volumes
 
 * ``/var/lib/backuppc``: Persistent data for backuppc, including ssh key
