@@ -15,13 +15,13 @@ default:
 	@exit 0
 
 kill:
-	sudo docker kill $(containername)
+	- sudo docker kill $(containername)
 
 clean: kill
-	sudo docker rm $(containername)
-	sudo rm -rf $(tmp_configpath) $(tmp_datapath)
+	- sudo docker rm $(containername)
+	- sudo rm -rf $(tmp_configpath) $(tmp_datapath)
 
-build:
+build: clean
 	sudo docker build -t backuppc:latest .
 	mkdir $(tmp_configpath) $(tmp_datapath)
 
@@ -29,7 +29,7 @@ logs:
 	sudo docker logs $(containername)
 
 run: clean build
-	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) nrapopor/backuppc:latest
+	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) backuppc:latest
 
 preserve: 
 	tar -zcvf ~/backuppc-$(containername).`date +%Y%m%d-%H%M%S`.tar.gz $(tmp_datapath) $(tmp_configpath)

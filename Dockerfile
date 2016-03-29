@@ -9,23 +9,42 @@ ENV STARTSCRIPT /usr/local/bin/dockerstart.sh
 
 ADD startscript.sh $STARTSCRIPT
 ADD msmtprc $TMP_DATA/.msmtprc
+# This is used for the package install of supervisor
+#ADD supervisor.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN sudo apt-get update && apt-get -y upgrade && \
-    apt-get -y install perl cpanminus debconf-utils python python-pip msmtp && \
+# This is used for the direct install of supervisor (like with pip)
+ADD supervisord.conf /etc/supervisord.conf
+
+
+
+RUN apt-get update && \
+    # Set the default answers for installations of the BackupPC, postfix, etc
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    echo 'postfix postfix/mailname string nrapoport.com' | debconf-set-selections && \
+    echo "postfix postfix/main_mailer_type select 'Local only'" | debconf-set-selections && \
+    echo 'backuppc backuppc/configuration-note note' | debconf-set-selections && \
+    echo 'backuppc backuppc/restart-webserver boolean true' | debconf-set-selections && \
+    echo 'backuppc backuppc/reconfigure-webserver multiselect apache2' | debconf-set-selections && \
+
+    # start the instalations
+    apt-get -y install apt-utils debconf-utils && \
+    apt-get -y upgrade && \
+    apt-get -y install perl cpanminus  python python-setuptools python-pip msmtp && \
 
     # get the required perl modules for BackupPC
-    sudo cpanm -n Archive::Zip Compress::Zlib File::Listing File::RsyncP XML::RSS && \
+    cpanm -n Archive::Zip Compress::Zlib File::Listing File::RsyncP XML::RSS && \
     
     # this is a better way of installing the supervisor then from the distro
     pip install supervisor && \
     
-    # Set the default answers for installation of the BackupPC
-    echo "postfix postfix/main_mailer_type select Local only" | debconf-set-selections && \
-    echo "backuppc backuppc/configuration-note note" | debconf-set-selections && \
-    echo "backuppc backuppc/restart-webserver boolean true" | debconf-set-selections && \
-    echo "backuppc backuppc/reconfigure-webserver multiselect apache2" | debconf-set-selections && \
     apt-get install -y backuppc apache2-utils && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get autoremove && \
+    apt-get clean && \
+    rm -rf .cpan/build/*         \
+       .cpan/sources/authors/id  \
+       .cpan/cpan_sqlite_log.*   \
+       /tmp/cpan_install_*.txt && \
+    rm -rf /var/lib/apt/lists/* && \
  
     # Configure package config to a temporary folder to be able to restore it when no config is present
     mkdir -p $TMP_CONFIG $TMP_DATA/.ssh && \
@@ -56,12 +75,6 @@ RUN sudo apt-get update && apt-get -y upgrade && \
     # Make startscript executable
     chmod ugo+x $STARTSCRIPT
 
-
-# This is used for the package install of supervisor
-#ADD supervisor.conf /etc/supervisor/conf.d/supervisord.conf
-
-# This is used for the direct install of supervisor (like with pip)
-ADD supervisord.conf /etc/supervisord.conf
 
 EXPOSE 80
 VOLUME [ "$PERSISTENT_DATA", "$PERSISTENT_CONFIG" ]
