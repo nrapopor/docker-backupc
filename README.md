@@ -15,7 +15,7 @@ A simple docker container for running Backuppc.
 
 * No authentication
 * SSH host key checking **disabled**
-* If the data volume is empty, a new SSH key pair gets generated at startup
+* If the data volume is empty, a new SSH keypair gets generated at startup
 
 
 ### Volumes
@@ -29,10 +29,8 @@ A simple docker container for running Backuppc.
 
 ## How to use
 
-* change the SMTP host in msmtprc
-* change backuppc htaccess password in Dockerfile
-  - the line reads `htpasswd -b $TMP_CONFIG/htpasswd backuppc password && \`
-    replace the `password` with an actual password
+* change the smtp host in msmtprc
+* change backuppc htaccess password in Dockerfile line 19
 * cd into the directory then use either the `make` or `docker` instructions
 * build at least once ...
 
@@ -44,24 +42,20 @@ ex. `containername=BOB; make run`
 
 * execute `make`
   - this will list the available targets and variables that can be overwritten
-* execute `make kill`
-  - this will stop a running container 
+* execute `make stop`
+  - this will stop a running container and clean up the default folders
 * execute `make clean`
-  - this will call kill and clean up the default folders
-     + WARNING: do not run this (or any targets that will trigger this) if you 
-         overwrote the `tmp_configpath` and/or `tmp_datapath` with folders
-         that point to the 'real' configuration and/or data folders.
+  - this will call stop running container and clean up the default folders
 * execute `make build`
   - this will call clean and (re)build the container 
-     + (with default, initialy empty, empty backup and config folders)
+    (with default, empty backup and config folders)
 * execute  `make run`
-  - this will call build and launch the container
+  - this will call build and launch the container 
+    (with default, empty backup and config folders)
 * execute `make preserve`
   - this make a backup of the default config folders as 
     `backuppc-$containername.<date time>.tar.gz` archive under your id
-      + WARNING: expects that `make run` was executed and not followed with a `clean`
-    or `build`, `kill` is OK, it does not delete the default folders
-      + I would not recommend doing this with a mult-terabyte 'real' data folder ...
+    (expects at least`make run` as a prerequisite ) 
 * execute  `make enter`
   - this will call run
   - list out the logs
