@@ -6,6 +6,8 @@ ENV TMP_DATA /backuppc_initial_data
 ENV PERSISTENT_CONFIG /etc/backuppc
 ENV PERSISTENT_DATA /var/lib/backuppc
 ENV STARTSCRIPT /usr/local/bin/dockerstart.sh
+ENV DEFAULTS /root/preseed.conf
+ENV OVERRIDES /root/overrides.sh
 
 ADD startscript.sh $STARTSCRIPT
 ADD msmtprc $TMP_DATA/.msmtprc
@@ -15,37 +17,50 @@ ADD msmtprc $TMP_DATA/.msmtprc
 # This is used for the direct install of supervisor (like with pip)
 ADD supervisord.conf /etc/supervisord.conf
 
+ADD preseed.conf $DEFAULTS
+ADD overrides.sh $OVERRIDES
+
 
 
 RUN apt-get update && \
+    # load the overrides
+    . $OVERRIDES && \
+
+    # Populate the domain name in the debconf selections
+    sed -i "s/default\.com/${DOMAIN_NAME}/g" $DEFAULTS && \
+    cat $DEFAULTS && \
+
     # Set the default answers for installations of the BackupPC, postfix, etc
-    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
-    echo 'postfix postfix/mailname string nrapoport.com' | debconf-set-selections && \
-    echo "postfix postfix/main_mailer_type select 'Local only'" | debconf-set-selections && \
-    echo 'backuppc backuppc/configuration-note note' | debconf-set-selections && \
-    echo 'backuppc backuppc/restart-webserver boolean true' | debconf-set-selections && \
-    echo 'backuppc backuppc/reconfigure-webserver multiselect apache2' | debconf-set-selections && \
+    debconf-set-selections $DEFAULTS && \
 
     # start the instalations
-    apt-get -y install apt-utils debconf-utils && \
+    apt-get -y install apt-utils debconf-utils systemd-services vim && \
     apt-get -y upgrade && \
-    apt-get -y install perl cpanminus  python python-setuptools python-pip msmtp && \
+    apt-get -y install perl cpanminus python python-setuptools python-pip msmtp && \
 
     # get the required perl modules for BackupPC
-    cpanm -n Archive::Zip Compress::Zlib File::Listing File::RsyncP XML::RSS && \
+    cpanm -n Archive::Zip Compress::Zlib File::Listing File::RsyncP XML::RSS CGI && \
     
     # this is a better way of installing the supervisor then from the distro
     pip install supervisor && \
     
-    apt-get install -y backuppc apache2-utils && \
+    apt-get install -y backuppc rsync apache2-utils && \
+
+    # Clean Up
     apt-get autoremove && \
     apt-get clean && \
-    rm -rf .cpan/build/*         \
-       .cpan/sources/authors/id  \
-       .cpan/cpan_sqlite_log.*   \
+    rm -rf /root/.cpan/build/*         \
+       /root/.cpan/sources/authors/id  \
+       /root/.cpan/cpan_sqlite_log.*   \
        /tmp/cpan_install_*.txt && \
     rm -rf /var/lib/apt/lists/* && \
  
+
+    # set the timezone
+    echo LOCAL_ZONE=$LOCAL_ZONE  && \
+    echo $LOCAL_ZONE > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/$LOCAL_ZONE /etc/localtime && \
+
     # Configure package config to a temporary folder to be able to restore it when no config is present
     mkdir -p $TMP_CONFIG $TMP_DATA/.ssh && \
     mv $PERSISTENT_CONFIG/* $TMP_CONFIG && \
@@ -54,7 +69,10 @@ RUN apt-get update && \
     # Disable ssh host key checking per default
     echo "host *"                       >> $TMP_DATA/.ssh/config && \
     echo "    StrictHostKeyChecking no" >> $TMP_DATA/.ssh/config && \
-    htpasswd -b $TMP_CONFIG/htpasswd backuppc password && \
+
+    # Set the password for backuppc user
+    echo BACKUPPC_PASSWORD=$BACKUPPC_PASSWORD && \
+    htpasswd -b $TMP_CONFIG/htpasswd backuppc $BACKUPPC_PASSWORD && \
 
     # Disable basic auth for package generated config
     sed -i 's/Auth.*//g' $TMP_CONFIG/apache.conf && \
@@ -71,6 +89,9 @@ RUN apt-get update && \
 
     # Remove host 'localhost' from package generated config
     sed -i 's/^localhost.*//g' $TMP_CONFIG/hosts && \
+
+    # Fix the invalid permissions on index.cgi
+    chmod u+s /usr/share/backuppc/cgi-bin/index.cgi && \
 
     # Make startscript executable
     chmod ugo+x $STARTSCRIPT

@@ -32,7 +32,7 @@ run: clean build
 	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) backuppc:latest
 
 preserve: 
-	tar -zcvf ~/backuppc-$(containername).`date +%Y%m%d-%H%M%S`.tar.gz $(tmp_datapath) $(tmp_configpath)
+	sudo tar -zcvf ~/backuppc-$(containername).`date +%Y%m%d-%H%M%S`.tar.gz $(tmp_datapath) $(tmp_configpath)
 
 shell: 
 	sudo docker exec -it $(containername) bash
