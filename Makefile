@@ -5,7 +5,7 @@ hostport ?= 8080
 
 default:
 	@echo Do not know what you wanted. Pass one of the following targets :
-	@echo "   " \(kill\|clean\|build\|logs\|run\|preserve\|shell\|enter\) 
+	@echo "   " \(kill\|start\|clean\|build\|logs\|run\|launch\|preserve\|shell\|enter\) 
 	@echo 
 	@echo You can also override the controlling variables  
 	@echo Defaults: tmp_datapath=$(tmp_datapath) 
@@ -16,6 +16,8 @@ default:
 
 kill:
 	- sudo docker kill $(containername)
+start: 
+	- sudo docker start $(containername)
 
 clean: kill
 	- sudo docker rm $(containername)
@@ -28,8 +30,10 @@ build: clean
 logs:
 	sudo docker logs $(containername)
 
-run: clean build
+launch: launch
 	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) backuppc:latest
+
+run: build launch
 
 preserve: 
 	sudo tar -zcvf ~/backuppc-$(containername).`date +%Y%m%d-%H%M%S`.tar.gz $(tmp_datapath) $(tmp_configpath)
@@ -37,5 +41,5 @@ preserve:
 shell: 
 	sudo docker exec -it $(containername) bash
 
-enter: run logs
+enter: start logs
 	sudo docker exec -it $(containername) bash

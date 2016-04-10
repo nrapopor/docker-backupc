@@ -73,19 +73,28 @@ for example: `containername=BOB; make run`
 
 * execute `make`
   - this will list the available targets and variables that can be overwritten
-* execute `make stop`
-  - this will stop a running container and clean up the default folders
+* execute `make kill`
+  - this will stop a running container 
+* execute `make start`
+  - this will start a stopped container 
 * execute `make clean`
-  - this will call kill and clean up the default folders
-     + **WARNING**: do not run this (or any targets that will trigger this) if you     
-       overwrote the `tmp_configpath` and/or `tmp_datapath` with folders    
-       that point to the 'real' configuration and/or data folders.    
+  - this will call `kill` and clean up the default folders
+     + **WARNING**: do not run this (or any targets that will trigger this) if you 
+       overwrote the `tmp_configpath` and/or `tmp_datapath` with folders 
+       that point to the 'real' configuration and/or data folders.
 * execute `make build`
-  - this will call clean and (re)build the container    
-    (with default, initially empty, empty backup and config folders)
+  - this will call `clean` and (re)build the container    
+    (with default, initially empty, backup and config folders)
 * execute  `make run`
-  - this will call build and launch the container 
-    (with default, empty backup and config folders)
+  - this will call `build` and `launch` targets    
+    (Not safe for 'real' `tmp_configpath` and/or `tmp_datapath`)
+* execute  `make launch`
+  - This will run a container (without rebuilding it)    
+    The purpose of this is when you want to rebuild a container that's pointing to 'real' folders .    
+    (this safe for 'real' locations for `tmp_configpath` and/or `tmp_datapath`)     
+    Run `make build` pointing to the default `tmp_configpath` and `tmp_datapath`, then overriding the `tmp_configpath` and/or `tmp_datapath` run `make launch`.    
+    This will recreate the container but will not wipe out your 'real' directories. 
+
 * execute `make preserve`
   - this make a backup of the default config folders as    
     `backuppc-$containername.<date time>.tar.gz` archive under your id
@@ -93,21 +102,19 @@ for example: `containername=BOB; make run`
       or `build`, `kill` is OK, it does not delete the default folders    
       I would __NOT__ recommend doing this with a multi-terabyte 'real' data folder ...
 * execute  `make enter`
-  - this will call `run`    
-  list out the logs    
-  open a bash shell in the running container
+  - this will call `start`, then `logs` then open a bash shell in the running container
 * execute `make logs`
   - this will show the logs of the running container    
-    (expects at least`make run` as a prerequisite ) 
+    (expects at least`make run`, `make launch` or `make start` as a prerequisite) 
 
 ### Using `docker`
 
 set some variables, for example
 >
-	DATA=<BackupPC data folder>
+	DATA=<BackupPC data folder>   
 	CONF=<BackupPC configuration folder>    
 	PORT=<the local port, ex 8080>   
-	CNAME=<container name>
+	CNAME=<container name>    
 
 
 then run the command as follows   
