@@ -111,13 +111,15 @@ for example: `containername=BOB; make run`
 
 set some variables, for example
 >
-	DATA=<BackupPC data folder>   
+	DATA=<BackupPC data folder>    
 	CONF=<BackupPC configuration folder>    
-	PORT=<the local port, ex 8080>   
+	PORT=<the local port, ex 8080>    
 	CNAME=<container name>    
 
 
-then run the command as follows   
+then run the commands as follows    
+>
+	sudo docker build -t backuppc:latest .
 >
 	sudo docker run -d -v $DATA:/var/lib/backuppc:z \
 		-v $CONF:/etc/backuppc:z -p $PORT:80 \  
