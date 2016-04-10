@@ -6,6 +6,7 @@ A simple docker container for running Backuppc at the latest version (3.3.1).
 
 ## Description
 
+<<<<<<< HEAD
 Backuppc is an unattended backup solution for individulas who need to manage multiple machine 
 backups for the 2 "F" (Friends and Family), and for organizations that do not want to spend 
 large amounts of money and a lot of effort on backup management tasks.    
@@ -21,6 +22,22 @@ this in mind. The __Migration__ section below will address the migration of the 
 to run in this container.
 
 ### Gory Details 
+=======
+Backuppc is an unattended backup solution for individulas who need to manage multiple machine    
+backups for the 2 "F" (Friends and Family), and for organizations that do not want to spend    
+large amounts of money and a lot of effort on backup management tasks.    
+I've leveraged a couple of exiting container projetcs (see attributions below).    
+The __Migration__ section below will address the migration of the existing backuppc instalation    
+to run in this container 
+
+* [backuppc-home](http://backuppc.sourceforge.net/ "http://backuppc.sourceforge.net/")
+
+If you have a current instalation of backuppc with tons of configuration and backed up    
+data you would want to be able to migrate to the docker deployement of the backuppc    
+without an interuption of your backup schedule. I build this container with specificaly   
+this in mind. Once you create your container you would want to merge
+ 
+>>>>>>> ff298be347d2579111abbcd82a0dc24d4fdcc592
 * This container installs BackupPC from Ubuntu Xenial sources.
   - On startup it checks if the provided volumes for data and configuration are     
     empty and if yes, move the default configuration from packaging into it
@@ -121,6 +138,7 @@ then run the command as follows
 Migration is fairly straight forward. 
 * build and launch the image as described above.
 * use the `make preserve` target above to backup the default installation folders    
+<<<<<<< HEAD
   This task will save the default config and the default data folders to the home folder of the user in a tar.gz format    
   ex: `backuppc-backuppctest.20160410-113538.tar.gz`    
   this backup was done for the default container name on April 10th 2016
@@ -132,6 +150,29 @@ Migration is fairly straight forward.
 
 ## Notes on this container
 This project was created in early 2016 and at this time to get the latest version would require either, building from source or leveraging **ubuntu:xenial** I've built this project from source before and would prefer leveraging exiting distribution so I've pointed the build to **ubuntu:xenial** instead of "**ubuntu:latest**, to be fair if xenial (16.04) will turn out to be not as stable as I would like, I may change my mind again and just build from source. I hope that since xenial will be the next LTS release I will be vindicated in my decision. I will modify the base image for this container once the **latest** is switched to **xenial**. 
+=======
+  This task will save the default config and the default data folders to the home    
+  folder of the user in a tar.gz format ex `backuppc-backuppctest.20160410-113538.tar.gz`    
+  this backup was done for the default container name on April 10th 2016    
+* Shutdown backuppc and make a backup of your configuration and data folders    
+  (I know it's a pain, since you will need a literal ton of space for the data portion    
+  However if anything goes sideways like it tends to do. you'll be happy you did)   
+* un-tar (using tar -xvf `name` ) and compare your /etc/backuppc and your /var/lib/backuppc    
+  folders with the defaults. You will need to adjust your config to leverage this installation    
+  elements like .ssh and .msmtprc in the data folder. 
+* stop and start this container pointing to your newly merged configuration and data folders    
+  instead of the default temp ones (see instructions for the __Using `docker`__ above
+
+
+## Notes on this container
+This project was created in early 2016 and at this time to get the latest version   
+would require either, building from source or leveraging ubuntu:xenial   
+I've built this project from source before and would prefer leveraging exiting    
+distribution so I've pointed the build to ubuntu:xenial, to be fair if xenial (16.04)    
+will turn out to be not as stable as I would like and I may change my mind again and    
+just build from source. I hope that since xenial will be the next LTS release I will    
+be vindicated in my decision 
+>>>>>>> ff298be347d2579111abbcd82a0dc24d4fdcc592
             
 ## Author and Legal information
 
