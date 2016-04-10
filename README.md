@@ -69,7 +69,7 @@ to run in this container.
 ### Using `make`
 
 You can override the default name of the container, **$containername**    
-(**backuppctest**) prior to launching the container    
+(**backuppc**) prior to launching the container    
 for example: `containername=BOB; make run`
 
 * execute `make`
@@ -116,15 +116,14 @@ set some variables, for example
 	CONF=<BackupPC configuration folder>    
 	PORT=<the local port, ex 8080>    
 	CNAME=<container name>    
-
+	DOCKERHUB_USER=<your docker hub id>    
 
 then run the commands as follows    
 >
-	sudo docker build -t backuppc:latest .
->
-	sudo docker run -d -v $DATA:/var/lib/backuppc:z \
-		-v $CONF:/etc/backuppc:z -p $PORT:80 \  
-		--name $CNAME backuppc:latest
+	sudo docker build -t $DOCKERHUB_USER/backuppc:latest .    
+	sudo docker run -d -v $DATA:/var/lib/backuppc:z \    
+	    -v $CONF:/etc/backuppc:z -p $PORT:80 \    
+	    --name $CNAME $DOCKERHUB_USER/backuppc:latest
 
 ## Migration
 
