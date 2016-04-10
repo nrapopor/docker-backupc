@@ -6,25 +6,25 @@ A simple docker container for running Backuppc at the latest version (3.3.1).
 
 ## Description
 
-Backuppc is an unattended backup solution for individulas who need to manage multiple machine 
+Backuppc is an unattended backup solution for individuals who need to manage multiple machine 
 backups for the 2 "F" (Friends and Family), and for organizations that do not want to spend 
 large amounts of money and a lot of effort on backup management tasks.    
-I've leveraged a couple of exiting container projetcs (see attributions below). 
+I've leveraged a couple of exiting container projects (see attributions below). 
  
 
 * [BackupPC project Home](http://backuppc.sourceforge.net/ "http://backuppc.sourceforge.net/")
 
-If you have a current instalation of backuppc with custom of configuration and backed up 
-data you would want to be able to migrate to the docker deployement of the backuppc 
-without an interuption of your backup schedule. I build this container with specificaly 
-this in mind. The __Migration__ section below will address the migration of the existing backuppc instalation 
+If you have a current installation of backuppc with custom of configuration and backed up 
+data you would want to be able to migrate to the docker deployment of the backuppc 
+without an interruption of your backup schedule. I build this container with specifically 
+this in mind. The __Migration__ section below will address the migration of the existing backuppc installation 
 to run in this container.
 
 ### Gory Details 
 * This container installs BackupPC from Ubuntu Xenial sources.
   - On startup it checks if the provided volumes for data and configuration are     
     empty and if yes, move the default configuration from packaging into it
-* Several configuration values like the expected container timezone    
+* Several configuration values like the expected container time zone    
   have been placed into the **overrides.sh** look at the __Customization__ section below
 * Support for sending status mail using msmtp
   - the image ip address of eth0 will be used for host line in the msmtprc    
@@ -58,7 +58,7 @@ to run in this container.
 * change backuppc htaccess **password** in the **overrides.sh**    
   the line reads `export BACKUPPC_PASSWORD=password`    
   replace the `password` with an actual password you want to use
-* change local timezone (if needed) in the **overrides.sh**    
+* change local time zone (if needed) in the **overrides.sh**    
   the line reads `export LOCAL_ZONE=America/New_York`    
 * Please modify the default domain in the **overrides.sh** file    
   replace the ***default.com*** with a real domain name    
