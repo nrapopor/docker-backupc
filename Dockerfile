@@ -16,11 +16,8 @@ ADD msmtprc $TMP_DATA/.msmtprc
 
 # This is used for the direct install of supervisor (like with pip)
 ADD supervisord.conf /etc/supervisord.conf
-
 ADD preseed.conf $DEFAULTS
 ADD overrides.sh $OVERRIDES
-
-
 
 RUN apt-get update && \
     # load the overrides

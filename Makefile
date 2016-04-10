@@ -1,7 +1,8 @@
 tmp_datapath ?= /tmp/backuppc_data
 tmp_configpath ?= /tmp/backuppc_config
-containername ?= backuppctest
-hostport ?= 8080
+containername ?= backuppc
+hostport ?= 19080
+docker_hub_id ?= nrapopor
 
 default:
 	@echo Do not know what you wanted. Pass one of the following targets :
@@ -12,6 +13,7 @@ default:
 	@echo "         " tmp_configpath=$(tmp_configpath) 
 	@echo "         " containername=$(containername) 
 	@echo "         " hostport=$(hostport)
+	@echo "         " docker_hub_id=$(docker_hub_id)
 	@exit 0
 
 kill:
@@ -24,14 +26,14 @@ clean: kill
 	- sudo rm -rf $(tmp_configpath) $(tmp_datapath)
 
 build: clean
-	sudo docker build -t backuppc:latest .
+	sudo docker build -t $(docker_hub_id)/backuppc:latest .
 	mkdir $(tmp_configpath) $(tmp_datapath)
 
 logs:
 	sudo docker logs $(containername)
 
 launch: launch
-	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) backuppc:latest
+	sudo docker run -d -v $(tmp_datapath):/var/lib/backuppc:z -v $(tmp_configpath):/etc/backuppc:z  -p $(hostport):80 --name $(containername) $(docker_hub_id)/backuppc:latest
 
 run: build launch
 
