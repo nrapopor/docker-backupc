@@ -46,6 +46,8 @@ fi
 echo "Setting permissions"
 chown -R backuppc:www-data $PERSISTENT_CONFIG
 #chown -R backuppc:backuppc $PERSISTENT_DATA
+# Fix ssh keys access for backuppc user
+chown -R backuppc:backuppc $PERSISTENT_DATA/.ssh
 chmod -R 0600 $PERSISTENT_DATA/.ssh/*
 
 # Start supervisord
