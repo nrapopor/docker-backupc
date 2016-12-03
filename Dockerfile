@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:latest
 MAINTAINER nrapopor@hotmail.com
 
 ENV TMP_CONFIG /backuppc_initial_config
