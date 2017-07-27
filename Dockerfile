@@ -31,7 +31,7 @@ RUN apt-get update && \
     debconf-set-selections $DEFAULTS && \
 
     # start the instalations
-    apt-get -y install apt-utils debconf-utils systemd-services vim && \
+    apt-get -y install apt-utils debconf-utils systemd-services vim par2 && \
     apt-get -y upgrade && \
     apt-get -y install perl cpanminus python python-setuptools python-pip msmtp && \
 
