@@ -20,11 +20,7 @@ without an interruption of your backup schedule. I build this container with spe
 this in mind. The __Migration__ section below will address the migration of the existing backuppc installation 
 to run in this container.
 
-If you have a current instalation of backuppc with tons of configuration and backed up    
-data you would want to be able to migrate to the docker deployement of the backuppc    
-without an interuption of your backup schedule. I build this container with specificaly   
-this in mind. Once you create your container you would want to merge
- 
+### Gory Details 
 * This container installs BackupPC from Ubuntu Xenial sources.
   - On startup it checks if the provided volumes for data and configuration are     
     empty and if yes, move the default configuration from packaging into it
