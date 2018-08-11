@@ -87,8 +87,15 @@ RUN apt-get update && \
     # Remove host 'localhost' from package generated config
     sed -i 's/^localhost.*//g' $TMP_CONFIG/hosts && \
 
-    # Fix the invalid permissions on index.cgi
+    # Fix the invalid iownership and permissions on index.cgi
+    chown backuppc.www-data /usr/lib/backuppc/cgi-bin/index.cgi && \
     chmod u+s /usr/share/backuppc/cgi-bin/index.cgi && \
+
+    # Fix the mutex apache bug -- this caused intetmittent issues that took me forever to diagnose
+    APACHE_MUTEX_FNCNTL=$(apache2ctl -t -D DUMP_RUN_CFG 2>/dev/null | grep "Mutex default" | grep mechanism=fcntl | wc
+ 95 -l) && \
+    [[ "${APACHE_MUTEX_FNCNTL} == "1" ]] && sed -i 's/^Mutex file/#Mutex file/g /etc/apache2/apache2.conf
+
 
     # Make startscript executable
     chmod ugo+x $STARTSCRIPT
