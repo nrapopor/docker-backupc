@@ -150,7 +150,7 @@ building from source or leveraging **ubuntu:xenial** I've built this project fro
 prefer leveraging exiting distribution so I've pointed the build to **ubuntu:xenial** instead of "**ubuntu:latest**, 
 to be fair if xenial (16.04) will turn out to be not as stable as I would like, I may change my mind again and just 
 build from source. I hope that since xenial will be the next LTS release I will be vindicated in my decision. 
-I will modify the base image for this container once the **latest** is switched to **xenial**. 
+I will modify the base image for this container once the **xenial** is switched to **latest**. 
             
 ## Author and Legal information
 
